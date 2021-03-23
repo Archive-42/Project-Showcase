@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>PreloadJS: File Types</title>
+	<link rel="stylesheet" href="https://use.typekit.net/imb6llj.css">
+	<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body>
+	<div id="result"></div>
+	<script src='../assets/libs/createjs.min.js'></script>
+	<script>
+		var c = createjs;
+
+		init();
+		function init() {
+			preload = new c.LoadQueue();
+			preload.on("fileload", onFileLoad);
+			preload.on("error", onError);
+
+			var manifest = [
+				"code.js",
+				"grant.json",
+				{src:"grant.json", type: c.Types.SPRITESHEET},
+				"font.css",
+				"gbot.svg",
+				"grant.xml",
+				"Texas.jpg",
+				"Autumn.png",
+				"Thunder.mp3",
+				"ERROR.foo"
+				// also font, text, jsonp, video
+			];
+
+			preload.loadManifest(manifest, true, "../assets/data/");
+		}
+
+		function onFileLoad(evt) {
+			log(evt.item.id + " *** " + evt.item.type + " *** " + evt.result);
+		}
+
+		function onError(evt) {
+			log("<span class='error'>error: " + evt.title + "</span>");
+		}
+
+		function log(str) {
+			document.getElementById("result").innerHTML += str + "<br>";
+		}
+	</script>
+	<a href="https://createjs.com/" target="_blank">
+		<img id="logo" src="../assets/images/createjs-badge-reverse.png">
+	</a>
+
+</body>
+
+</html>

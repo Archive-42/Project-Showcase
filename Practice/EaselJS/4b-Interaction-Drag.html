@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>EaselJS: Interaction: Drag &amp; Drop</title>
+	<link rel="stylesheet" href="https://use.typekit.net/imb6llj.css">
+	<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body>
+	<canvas id="testCanvas" width="550" height="500"></canvas>
+	<script src='../assets/libs/createjs.min.js'></script>
+	<script>
+		var c = createjs, stage, letters;
+		var message = "INTERACTIVE";
+
+		init();
+		function init() {
+			var font = {
+				src: "https://fonts.googleapis.com/css?family=Shrikhand",
+				type: c.Types.FONTCSS
+			}
+			var queue = new c.LoadQueue();
+			queue.on("complete", onComplete);
+			queue.loadFile(font, true);
+		}
+
+		function onComplete() {
+			stage = new createjs.Stage("testCanvas");
+			stage.enableMouseOver(10);
+			stage.mouseMoveOutside = true;
+			createjs.Touch.enable(stage);
+			resize();
+
+			title = new createjs.Text(message, "150px Shrikhand", "#356177");
+			title.alpha = 0.25;
+			title.x = stage.canvas.width - title.getMeasuredWidth() >> 1;
+			title.y = stage.canvas.height - title.getMeasuredHeight() >> 1;
+			stage.addChild(title);
+
+			var l = message.length;
+			var prevX = title.x;
+			letters = stage.addChild(new c.Container());
+
+			for (var i = 0, l=message.length; i < l; i++) {
+				var letter = new createjs.Text(message[i], "150px Shrikhand", "#F9F9F9");
+
+				letter.x = prevX;
+				letter.y = title.y + 0.5;
+				letter.hasMoved = false;
+				prevX = letter.x + letter.getMeasuredWidth();
+
+				letter.cursor = "pointer";
+				letter.on("mousedown", function (evt) {
+					this.offset = { x: this.x - evt.stageX, y: this.y - evt.stageY };
+				});
+
+				letter.on("pressmove", function (evt) {
+					this.x = evt.stageX + this.offset.x;
+					this.y = evt.stageY + this.offset.y;
+					this.hasMoved = true;
+				});
+
+				letters.addChild(letter);
+			}
+
+			createjs.Ticker.on("tick", stage);
+			window.addEventListener("resize", resize);
+		}
+
+		function resize() {
+			stage.canvas.width = window.innerWidth;
+			stage.canvas.height = window.innerHeight;
+			stage.update();
+		}
+
+	</script>
+
+
+	<a href="https://createjs.com/" target="_blank">
+		<img id="logo" src="../assets/images/createjs-badge-reverse.png">
+	</a>
+
+	<img id="badge" src="../assets/images/Button_Drag_White.svg">
+</body>
+
+</html>

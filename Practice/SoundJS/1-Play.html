@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Workshop: SoundJS Basics</title>
+	<link rel="stylesheet" href="https://use.typekit.net/imb6llj.css">
+	<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body>
+	<div id=wrapper>
+		<input id="playBtn" class="cjsbutton" type="button" disabled onclick="play()" value="Loading...">
+	</div>
+	<script src='../assets/libs/createjs.min.js'></script>
+	<script>
+		var c = createjs, playBtn, music = null;
+
+		init();
+		function init() {
+			playBtn = document.getElementById("playBtn");
+			playBtn.value = "Loading...";
+
+			createjs.Sound.on("fileload", onFileLoad);
+			createjs.Sound.registerSound("../assets/sounds/MK21.mp3", "music");
+		}
+
+		function onFileLoad(evt) {
+			// This is fired for each sound that is registered.
+			music = c.Sound.play(evt.id);  // play using id.  Could also use full source path or event.src.
+			music.on("complete", onComplete);
+
+			playBtn.value = "Playing";
+			playBtn.disabled = false;
+		}
+
+		function onComplete(event) {
+			playBtn.value = "Done";
+		}
+
+		function play() {
+			music.paused = !music.paused;
+			playBtn.value = music.paused ? "Paused" : "Playing"
+		}
+	</script>
+
+	<a href="https://createjs.com/" target="_blank">
+		<img id="logo" src="../assets/images/createjs-badge-reverse.png">
+	</a>
+
+</body>
+
+</html>

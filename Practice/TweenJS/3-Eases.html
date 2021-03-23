@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" style="background-color: transparent">
+
+<head>
+	<meta charset="UTF-8">
+	<title>TweenJS: Eases</title>
+	<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body>
+	<canvas id="testCanvas" width="500" height="500"></canvas>
+	<script src='../assets/libs/createjs.min.js'></script>
+	<script>
+		var c = createjs;
+
+		init();
+		function init() {
+			var stage = new c.Stage("testCanvas");
+
+			var eases = [
+				c.Ease.linear,
+				c.Ease.quadIn,
+				c.Ease.quadOut,
+				c.Ease.quadInOut,
+				c.Ease.bounceOut,
+				c.Ease.elasticOut
+			]
+			for (var i=0; i<6; i++) {
+				var ball = stage.addChild(new c.Shape());
+				ball.graphics.f(c.Graphics.getHSL(i*60, 100, 50)).dc(0, 0, 20);
+				ball.x = 50;
+				ball.y = 50 * (i+1);
+
+				c.Tween.get(ball).to({ x: 450 }, 2000, eases[i]);
+			}
+
+			createjs.Ticker.timingMode = createjs.Ticker.RAF;
+			c.Ticker.on("tick", stage);
+		}
+
+	</script>
+
+	<a href="https://createjs.com/" target="_blank">
+		<img id="logo" src="../assets/images/createjs-badge-reverse.png">
+	</a>
+</body>
+
+</html>

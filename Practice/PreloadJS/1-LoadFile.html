@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" style="background-color: black">
+
+<head>
+	<meta charset="UTF-8">
+	<title>PreloadJS: Load File</title>
+	<link rel="stylesheet" href="https://use.typekit.net/imb6llj.css">
+	<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body style="background-color: black">
+	<script src='../assets/libs/createjs.min.js'></script>
+	<script>
+		var c = createjs;
+		var imgSrc = "../assets/images/CreateJS-Shirt.png";
+
+		var q = new c.LoadQueue();
+		q.on("complete", onComplete);
+		q.loadFile({ src: imgSrc, id: "fun" }, true);
+
+		// can also just pass the src, but then the id is the full src:
+		// q.loadFile(imgSrc, true);
+
+
+		function onComplete(evt) {
+			var img = q.getResult("fun");
+			document.body.appendChild(img);
+		}
+	</script>
+
+	<a href="https://createjs.com/" target="_blank">
+		<img id="logo" src="../assets/images/createjs-badge-reverse.png">
+	</a>
+</body>
+
+</html>

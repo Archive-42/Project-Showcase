@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>TweenJS: CSS</title>
+	<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body>
+
+	<div id="imageHolder"></div>
+	<script src='../assets/libs/createjs.min.js'></script>
+	<script src='../assets/js/CSSPlugin.js'></script>
+	<script>
+		var c = createjs, canvas, stage;
+		var images = [], index = -1;
+
+		function init() {
+			c.CSSPlugin.install(createjs.Tween);
+
+			var manifest = [
+				{ src: "image0.jpg", id: "image0" },
+				{ src: "image1.jpg", id: "image1" },
+				{ src: "image2.jpg", id: "image2" },
+				{ src: "image3.jpg", id: "image3" }
+			];
+
+			var queue = new c.LoadQueue(true);
+			queue.on("complete", handleComplete);
+			queue.on("fileload", handleFileLoad);
+			queue.loadManifest(manifest, true, "../assets/images/");
+		}
+
+		function handleClick(event) {
+			var currentImage = images[++index % images.length | 0];
+			c.Tween.get(currentImage.tag)
+				.to({ transform: "translate(0px, -300px) rotate(" + currentImage.rotation + "deg) scale(1)" }, 200, c.Ease.quadInOut)
+				.call(function () {
+					for (var i = 0; i < images.length; i++) {
+						var img = images[i];
+						img.tag.style.zIndex = ++img.index % images.length | 0;
+					}
+				})
+				.to({ transform: "translate(0px, 0px) rotate(" + (-8 + Math.random() * 16 | 0) + "deg) scale(1)" }, 600, c.Ease.quadOut);
+		}
+
+		function handleComplete(event) {
+			images.reverse();
+			document.getElementById('imageHolder').addEventListener("click", handleClick);
+		}
+
+		function handleFileLoad(event) {
+			var deg = -8 + Math.random() * 16 | 0;
+
+			var image = event.result;
+			image.className = "borderImage";
+			image.style.transform = "translate(0px, 0px) rotate(" + deg + "deg) scale(1)";
+			image.style.position = "absolute";
+			image.style.zIndex = images.length;
+
+			images.push({ tag: image, rotation: deg, index: images.length });
+			document.getElementById('imageHolder').append(image);
+		}
+
+		init();
+	</script>
+
+	<a href="https://createjs.com/" target="_blank">
+		<img id="logo" src="../assets/images/createjs-badge-reverse.png">
+	</a>
+	<img id="badge" src="../assets/images/Button_Click_White.svg">
+
+</body>
+
+</html>

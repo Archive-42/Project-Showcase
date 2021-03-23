@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>EaselJS: Mask</title>
+	<link rel="stylesheet" href="https://use.typekit.net/imb6llj.css">
+	<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body>
+
+	<canvas id="canvas" width="100" height="100"></canvas>
+	<script src='../assets/libs/createjs.min.js'></script>
+	<script>
+		var c = createjs, stage, bmp, bg, mask;
+
+		function init() {
+			stage = new c.Stage("canvas");
+
+			var queue = new c.LoadQueue();
+			queue.on("complete", onComplete);
+			queue.loadFile({ src: "../assets/images/image2.jpg", id: "img" });
+		}
+
+		function onComplete(evt) {
+			bmp = new c.Bitmap(evt.target.getResult("img"));
+
+			bg = bmp.clone();
+			bg.filters = [new c.ColorMatrixFilter(new c.ColorMatrix(0, 0, -100, 0))];
+			bg.cache(0, 0, bg.image.width, bg.image.height);
+
+			var r = bmp.image.height / 2 - 15;
+			mask = new c.Shape();
+			mask.graphics.beginStroke("#F9F9F9").setStrokeStyle(10).dc(0, 0, r);
+			bmp.mask = mask;
+
+			stage.addChild(bg, bmp, mask);
+			stage.on("stagemousedown", onMouseDown);
+
+			c.Ticker.timingMode = createjs.Ticker.RAF;
+			c.Ticker.on("tick", stage);
+
+			window.addEventListener("resize", resize);
+			resize();
+		}
+
+		function onMouseDown() {
+			createjs.Tween.get(mask, { override: true }).to({ x: stage.mouseX, y: stage.mouseY }, 500, createjs.Ease.backOut);
+		}
+
+		function resize(event) {
+			var w = stage.canvas.width = window.innerWidth;
+			var h = stage.canvas.height = window.innerHeight;
+
+			bg.x = bmp.x = w - bmp.image.width >> 1;
+			bg.y = bmp.y = h - bmp.image.height >> 1;
+
+			createjs.Tween.get(mask, { override: true }).to({ x: w / 2, y: h / 2 }, 500, createjs.Ease.backOut);
+
+			stage.update();
+		}
+
+		function onTick(event) {
+			stage.update(event);
+		}
+
+
+		init();
+	</script>
+
+	<img id="badge" src="../assets/images/Button_Click_White.svg">
+	<a href="https://createjs.com/" target="_blank">
+		<img id="logo" src="../assets/images/createjs-badge-reverse.png">
+	</a>
+
+</body>
+
+</html>

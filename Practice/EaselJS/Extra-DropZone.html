@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>CreateJS: Drag n Drop w/Drop Zone</title>
+	<link rel="stylesheet" href="https://use.typekit.net/imb6llj.css">
+	<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body>
+	<canvas id="canvas" width="900" height="600"></canvas>
+	<a href="https://createjs.com/" target="_blank">
+		<img id="logo" src="../assets/images/createjs-badge-reverse.png">
+	</a>
+
+	<img id="badge" src="../assets/images/Button_Drag_White.svg">
+	<script src='../assets/libs/createjs.min.js'></script>
+	<script>
+		var canvas;
+		var stage;
+		var boxes;
+		var panel;
+		var isOver = false;
+
+		function loadAssest() {
+			var manifest = [
+				{ id: "openHand", src: "../assets/images/openhand.png" },
+				{ id: "closeHand", src: "../assets/images/closedhand.png" }
+			]
+			loader = new createjs.LoadQueue(true);
+			loader.on("complete", init)
+			loader.loadManifest(manifest);
+		}
+
+		function init() {
+			canvas = document.getElementById("canvas");
+			stage = new createjs.Stage(canvas);
+			stage.enableMouseOver(20);
+
+			canvas.width = window.innerWidth;
+			canvas.height = window.innerHeight;
+
+			createjs.Touch.enable(stage);
+
+			createjs.Ticker.timingMode = createjs.Ticker.RAF;
+			createjs.Ticker.on("tick", onTick);
+
+			//Create hand MC with 2 hand states.
+			mc = new createjs.MovieClip({ mode: 0, loop: 0, startPosition: 0, labels: { on: 0, off: 1 } });
+			mc.framerate = 20;
+			var bitmap = new createjs.Bitmap(loader.getResult("openHand"));
+			var bitmap1 = new createjs.Bitmap(loader.getResult("closeHand"));
+			mc.alpha = 0;
+
+			mc.timeline.addTween(createjs.Tween.get({}).to({ state: [{ t: bitmap }] }).to({ state: [{ t: bitmap1 }] }, 1).wait(1));
+
+			scene = new createjs.Container();
+
+			stage.addChild(scene, mc);
+			mc.gotoAndStop("on");
+			mc.mouseChidren = false;
+			mc.mouseEnabled = false;
+
+			buildGrid();
+			buildDropZone();
+
+			window.addEventListener("resize", handleResize);
+
+		}
+
+		function buildDropZone() {
+			panel = new createjs.Container();
+			panelBG = getSprite(canvas.width, 300, createjs.Graphics.getRGB(244, 120, 77));
+			panel.width = panelBG.width;
+			panel.height = panelBG.height;
+			panel.x = boxContainer.width - panel.width >> 1
+			panel.y = boxContainer.height + boxContainer.y + 10;
+
+			text = new createjs.Text("Drop Here!", "bold 24px Arial", "#F7A14B");
+			text.textAlign = "center";
+			text.x = panel.width / 2;
+			text.y = panel.height / 2 - text.getMeasuredLineHeight();
+
+			dropZone = new createjs.Shape();
+			var padding = 10;
+			dropZone.graphics.ss(5, "square").sd([5, 10], 0).s("#F7A14B").dr(padding, padding, panel.width - padding * 2, panel.height - padding * 6);
+
+			var holder = new createjs.Container();
+			holder.name = "holder";
+			panel.addChild(panelBG, dropZone, text, holder);
+
+			boxContainer.addChild(panel)
+		}
+
+		function updateDropZone() {
+
+			panelBG.graphics.clear();
+			panelBG = getSprite(stage.canvas.width, 300, createjs.Graphics.getRGB(244, 120, 77));
+			panel.width = panelBG.width;
+			panel.height = panelBG.height;
+			panel.x = boxContainer.width - panel.width >> 1
+			panel.y = boxContainer.height + boxContainer.y + 10;
+
+			text.x = panel.width / 2;
+			text.y = panel.height / 2 - text.getMeasuredLineHeight();
+
+			var padding = 10;
+			dropZone.graphics.clear().ss(5, "square").sd([5, 10], 0).s("#F7A14B").dr(padding, padding, panel.width - padding * 2, panel.height - padding * 6);
+
+			panel.addChildAt(panelBG, 0);
+			panel.addChildAt(dropZone, 1);
+		}
+
+		function showPanel() {
+			createjs.Tween.get(panel, { override: true }).to({ y: (boxContainer.y + boxContainer.height) - panel.height / 1.2 }, 500, createjs.Ease.backOut);
+		}
+
+		function hidePanel() {
+			createjs.Tween.get(panel, { override: true }).to({ y: boxContainer.y + boxContainer.height + 10 }, 500, createjs.Ease.backOut);
+		}
+
+		function buildGrid() {
+			var total = 8;
+			var cols = 4;
+			var padding = 10;
+			var w = 170;
+			var h = 180;
+			boxes = [];
+			var box = getSprite(w, h, createjs.Graphics.getRGB(53, 97, 119))
+			box.cache(0, 0, w, h);
+			boxContainer = new createjs.Container();
+			boxContainer.width = 0
+			for (var i = 0; i < total; i++) {
+				var bit = new createjs.Bitmap(box.cacheCanvas);
+				bit.width = bit.image.width;
+				bit.height = bit.image.height;
+				bit.regX = w / 2;
+				bit.regY = h / 2;
+				bit.index = i;
+				bit.x = bit.regX + (bit.image.width + padding) * (i % cols);
+				bit.y = bit.regY + (i / cols | 0) * (bit.image.height + padding);
+				bit.originalPosition = new createjs.Point(bit.x, bit.y);
+				bit.originalScale = 1;
+				bit.on("rollover", handleRollOver);
+				bit.on("mousedown", function (evt) {
+					mc.gotoAndStop("off");
+					showPanel();
+					this.parent.addChild(this);
+
+					boxContainer.addChildAt(panel, boxContainer.numChildren - 2);
+
+					this.scale *= 1.1;
+					this.offset = { x: this.x - evt.stageX, y: this.y - evt.stageY };
+				});
+				bit.on("pressup", function (evt) {
+					mc.gotoAndStop("on");
+					var box = boxes[this.index];
+					box.scale = 1;
+					this.shadow = null;
+					if (isOver) {
+						var holder = panel.getChildAt(panel.numChildren - 1);
+						var g = getSprite(w, h, "#F7A14B");
+						g.cache(0, 0, w, h);
+						g.regX = w / 2;
+						g.regY = h / 2;
+						holder.addChild(g);
+						var pt = box.localToGlobal(0, 0);
+						g.x = pt.x + g.regX;
+						g.y = (g.regY / 1.2) + (panel.height - g.height >> 1);
+						box.alpha = 0;
+						createjs.Tween.get().wait(500).call(function () {
+							hidePanel();
+							createjs.Tween.get().wait(250).call(function () {
+								box.scale = 0;
+								box.alpha = 1;
+								box.x = box.originalPosition.x;
+								box.y = box.originalPosition.y;
+								holder.removeAllChildren();
+								createjs.Tween.get(box).to({ scale: 1 }, 500, createjs.Ease.backOut)
+							});
+						})
+					} else {
+						createjs.Tween.get(box).to({ x: box.originalPosition.x, y: box.originalPosition.y }, 250, createjs.Ease.backInOut);
+						hidePanel();
+					}
+
+				})
+				bit.on("pressmove", function (evt) {
+					mc.gotoAndStop("off");
+					this.cursor = "none";
+					mc.alpha = 1;
+					this.shadow = new createjs.Shadow("#000000", 0, 0, 5);
+					this.x = evt.stageX + this.offset.x
+					this.y = evt.stageY + this.offset.y;
+					var pt = this.localToLocal(0, this.height, panel);
+					isOver = panel.hitTest(pt.x, pt.y);
+
+				});
+				bit.on("rollout", handleRollOut);
+				boxes.push(bit)
+				boxContainer.addChild(bit);
+			}
+			boxContainer.width = (w + padding) * cols;
+			boxContainer.height = (h + padding) * (total / cols);
+			boxContainer.x = canvas.width - boxContainer.width >> 1;
+			boxContainer.y = canvas.height - boxContainer.height >> 1;
+			scene.addChild(boxContainer);
+		}
+
+		function handleRollOver(event) {
+			var target = event.target;
+			target.cursor = "none";
+			mc.alpha = 1;
+
+			scene.addChild(mc);
+		}
+
+		function handleRollOut(event) {
+			mc.alpha = 0;
+		}
+
+		function getSprite(w, h, color) {
+			var s = new createjs.Shape();
+			s.graphics.f(color).rr(0, 0, w, h, 5);
+			s.width = w;
+			s.height = h;
+			return s;
+		}
+
+		function onTick(event) {
+			mc.x = stage.mouseX - 10;
+			mc.y = stage.mouseY - 10;
+			stage.update(event);
+		}
+
+		function handleResize() {
+			canvas.width = window.innerWidth;
+			canvas.height = window.innerHeight;
+
+			boxContainer.x = canvas.width - boxContainer.width >> 1;
+			boxContainer.y = canvas.height - boxContainer.height >> 1;
+
+			updateDropZone();
+
+			stage.update();
+		}
+
+		loadAssest();
+	</script>
+
+
+
+
+</body>
+
+</html>

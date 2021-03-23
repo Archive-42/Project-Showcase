@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>CreateJS</title>
+	<link rel="stylesheet" href="https://use.typekit.net/imb6llj.css">
+	<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body onload="init();">
+	<canvas id="canvas" width="1024" height="720"></canvas>
+	<script src="../assets/libs/createjs.min.js"></script>
+	<script>
+		var canvas, stage;
+
+		init();
+		function init() {
+			stage = new createjs.Stage("canvas");
+
+
+
+			createjs.Ticker.timingMode = createjs.Ticker.RAF;
+			createjs.Ticker.on("tick", onTick);
+
+			window.addEventListener("resize", resize);
+			resize();
+		}
+
+		function onTick(event) {
+			stage.update(event);
+		}
+
+		function resize() {
+			var w = stage.canvas.width = window.innerWidth;
+			var h = stage.canvas.height = window.innerHeight;
+			stage.update();
+		}
+
+	</script>
+
+	<a href="https://createjs.com/" target="_blank">
+		<img id="logo" src="../assets/images/createjs-badge-reverse.png">
+	</a>
+</body>
+
+</html>

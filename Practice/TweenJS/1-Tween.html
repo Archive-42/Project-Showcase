@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" style="background-color: transparent">
+
+<head>
+	<meta charset="UTF-8">
+	<title>TweenJS: Tween</title>
+	<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body>
+	<canvas id="testCanvas" width="500" height="500"></canvas>
+	<script src='../assets/libs/createjs.min.js'></script>
+	<script>
+		var c = createjs;
+
+		init();
+		function init() {
+			var stage = new c.Stage("testCanvas");
+			var ball = stage.addChild(new c.Shape());
+			ball.graphics.beginFill("red").drawCircle(0, 0, 50);
+			ball.x = ball.y = 100;
+
+			c.Tween.get(ball).to({ x: 400 }, 2000);
+
+			createjs.Ticker.timingMode = createjs.Ticker.RAF;
+			c.Ticker.on("tick", stage);
+		}
+
+	</script>
+
+	<a href="https://createjs.com/" target="_blank">
+		<img id="logo" src="../assets/images/createjs-badge-reverse.png">
+	</a>
+</body>
+
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" style="background-color: black">
+
+<head>
+	<meta charset="UTF-8">
+	<title>PreloadJS: Loaders</title>
+	<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body style="background-color: black">
+
+	<script src='../assets/libs/createjs.min.js'></script>
+	<script>
+		var c = createjs;
+
+		init();
+		function init() {
+			var imageLoader = new c.ImageLoader({ src: "../assets/images/CreateJS-Shirt.png" });
+			imageLoader.on("complete", onComplete);
+			imageLoader.load();
+		}
+
+		function onComplete(evt) {
+			document.body.appendChild(evt.result);
+		}
+	</script>
+
+	<a href="https://createjs.com/" target="_blank">
+		<img id="logo1" src="../assets/images/createjs-badge-reverse.png">
+	</a>
+</body>
+
+</html>

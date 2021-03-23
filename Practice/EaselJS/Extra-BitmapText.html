@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>EaselJS: BitmapText</title>
+	<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body>
+	<canvas id="canvas" width="550" height="500"></canvas>
+	<a href="https://createjs.com/" target="_blank">
+		<img id="logo" src="../assets/images/createjs-badge-reverse.png">
+	</a>
+	<script src='../assets/libs/createjs.min.js'></script>
+	<script src='../assets/js/StageGL.js'></script>
+	<script>
+		var canvas, stage;
+
+		function init() {
+			canvas = document.getElementById("canvas");
+			stage = new createjs.StageGL(canvas, { antialias: true });
+
+			canvas.width = window.innerWidth;
+			canvas.height = window.innerHeight;
+
+			stage.updateViewport(canvas.width, canvas.height);
+			stage.setClearColor("#006ec6");
+
+			image = new Image();
+			image.crossOrigin = "Anonymous";
+			image.src = "../assets/images/BitmapFontfla_atlas_.png";
+			image.onload = handleImageLoad.bind(this);
+		}
+
+		function handleImageLoad() {
+			window.addEventListener("resize", handleResize);
+			data =
+				{
+					"images": [image],
+					"frames": [
+						[473, 744, 147, 188],
+						[136, 1116, 119, 183],
+						[148, 929, 141, 185],
+						[622, 930, 140, 185],
+						[306, 748, 148, 183],
+						[291, 933, 139, 185],
+						[321, 560, 150, 186],
+						[773, 752, 144, 183],
+						[0, 560, 150, 187],
+						[803, 564, 150, 186],
+						[607, 0, 184, 185],
+						[152, 744, 152, 183],
+						[793, 0, 181, 186],
+						[165, 374, 163, 183],
+						[919, 853, 82, 80],
+						[432, 934, 132, 183],
+						[257, 1216, 226, 80],
+						[681, 1122, 83, 185],
+						[764, 937, 129, 183],
+						[0, 186, 181, 186],
+						[330, 375, 159, 183],
+						[566, 1117, 113, 183],
+						[622, 744, 149, 184],
+						[532, 372, 164, 183],
+						[895, 937, 129, 183],
+						[607, 187, 179, 183],
+						[0, 374, 163, 184],
+						[419, 0, 186, 188],
+						[165, 559, 154, 183],
+						[228, 0, 189, 187],
+						[0, 934, 134, 187],
+						[698, 374, 161, 183],
+						[861, 374, 156, 188],
+						[0, 749, 146, 183],
+						[491, 557, 154, 185],
+						[788, 188, 177, 184],
+						[0, 0, 226, 184],
+						[358, 190, 172, 183],
+						[183, 189, 173, 183],
+						[647, 559, 154, 183]
+					],
+					"framerate": 20,
+					"animations": {
+						"0": { "frames": [0] },
+						"1": { "frames": [1] },
+						"2": { "frames": [2] },
+						"3": { "frames": [3] },
+						"4": { "frames": [4] },
+						"5": { "frames": [5] },
+						"6": { "frames": [6] },
+						"7": { "frames": [7] },
+						"8": { "frames": [8] },
+						"9": { "frames": [9] },
+						"A": { "frames": [10] },
+						"B": { "frames": [11] },
+						"C": { "frames": [12] },
+						"D": { "frames": [13] },
+						".": { "frames": [14] },
+						"E": { "frames": [15] },
+						"+": { "frames": [16] },
+						"!": { "frames": [17] },
+						"F": { "frames": [18] },
+						"G": { "frames": [19] },
+						"H": { "frames": [20] },
+						"I": { "frames": [21] },
+						"J": { "frames": [22] },
+						"K": { "frames": [23] },
+						"L": { "frames": [24] },
+						"M": { "frames": [25] },
+						"N": { "frames": [26] },
+						"O": { "frames": [27] },
+						"P": { "frames": [28] },
+						"Q": { "frames": [29] },
+						"?": { "frames": [30] },
+						"R": { "frames": [31] },
+						"S": { "frames": [32] },
+						"T": { "frames": [33] },
+						"U": { "frames": [34] },
+						"V": { "frames": [35] },
+						"W": { "frames": [36] },
+						"X": { "frames": [37] },
+						"Y": { "frames": [38] },
+						"Z": { "frames": [39] }
+					}
+
+				};
+
+			handleComplete();
+		}
+
+		function handleResize() {
+			canvas.width = window.innerWidth;
+			canvas.height = window.innerHeight;
+			var w = stage.canvas.width;
+			var h = stage.canvas.height;
+
+			bg.graphics.clear().beginRadialGradientFill(["#000000", "#006ec6"], [1, 0], (w / 2), h / 2, 10, (w / 2) + 10, (h / 2) + 10, h / 1.25).drawCircle(w >> 1, h >> 1, h * 2);
+
+			bg.cache(0, 0, stage.canvas.width, stage.canvas.height);
+
+			var bounds = txt.getBounds();
+			txt.x = txt.regX + (canvas.width - bounds.width >> 1);
+			txt.y = txt.regY + (canvas.height - bounds.height >> 1);
+
+			stage.updateViewport(canvas.width, canvas.height);
+
+			stage.update();
+		}
+
+		function handleComplete() {
+			var ss = new createjs.SpriteSheet(data);
+			var w = stage.canvas.width;
+			var h = stage.canvas.height;
+
+			bg = new createjs.Shape();
+			bg.graphics.beginRadialGradientFill(["#000000", "#006ec6"], [1, 0], (w / 2), h / 2, 10, (w / 2) + 10, (h / 2) + 10, h / 1.25).drawCircle(w >> 1, h >> 1, h * 2);
+			bg.cache(0, 0, stage.canvas.width, stage.canvas.height);
+
+			txt = new createjs.BitmapText("", ss);
+
+			bg.compositeOperation = "soft-light";
+			bg.alpha = .17;
+			var arr = ["Bitmap", "Fonts", "are", "cool!", "Right?!?", "I", "Like", "Oreos!!!"];
+			var index = 0;
+			txt.text = arr[index];
+
+			var bounds = txt.getBounds();
+			txt.regX = bounds.width / 2;
+			txt.regY = bounds.height / 2;
+			txt.x = -1000;
+			txt.y = txt.regY + (canvas.height - bounds.height >> 1);
+			var targetX = txt.regX + (canvas.width - bounds.width >> 1);
+
+			createjs.Tween.get(txt, { loop: -1 }).wait(500).to({ x: targetX }, 500, createjs.Ease.backOut).wait(1000).to({ scale: 0.5 }, 750).to({ x: stage.canvas.width + bounds.width }, 550, createjs.Ease.backIn).wait(500).set({ x: -1000 }).call(function () {
+				txt.text = arr[++index % arr.length];
+				var bounds = this.getBounds();
+				this.regX = bounds.width / 2;
+				this.regY = bounds.height / 2;
+				targetX = this.regX + (canvas.width - bounds.width >> 1);
+			});
+
+			stage.addChild(txt, bg);
+			createjs.Ticker.on("tick", stage);
+		};
+		init();
+	</script>
+</body>
+
+</html>

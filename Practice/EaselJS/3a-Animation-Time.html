@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>EaselJS: Animation</title>
+	<link rel="stylesheet" href="https://use.typekit.net/imb6llj.css">
+	<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body>
+	<canvas id="testCanvas" width="500" height="500"></canvas>
+	<script src='../assets/libs/createjs.min.js'></script>
+	<script>
+		var c = createjs, stage, shape;
+
+		init();
+		function init() {
+			stage = new c.Stage("testCanvas");
+			shape = new c.Shape();
+			shape.graphics.beginFill("red").drawCircle(0,0,50);
+			shape.y = 200;
+			stage.addChild(shape);
+
+			shape2 = stage.addChild(shape.clone());
+			shape2.y += 100;
+
+			c.Ticker.timingMode = c.Ticker.RAF;
+			c.Ticker.on("tick", onTick);
+		}
+
+		function onTick(evt) {
+			var speed = 4;
+			shape.x += speed;
+			if (shape.x > stage.canvas.width) { shape.x = 0; }
+
+			shape2.x += speed * evt.delta/(1000/60);
+			if (shape2.x > stage.canvas.width) { shape2.x = 0; }
+
+			stage.update();
+		}
+	</script>
+
+	<a href="https://createjs.com/" target="_blank">
+		<img id="logo" src="../assets/images/createjs-badge-reverse.png">
+	</a>
+</body>
+
+</html>

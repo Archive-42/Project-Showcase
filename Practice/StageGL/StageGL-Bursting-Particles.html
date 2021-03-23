@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en" style="background-color:#19101C">
+
+<head>
+	<meta charset="UTF-8">
+	<title>CreateJS: Bursting particles animation with the linked list</title>
+	<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body>
+
+
+	<canvas id="myCanvas" width="400" height="300"></canvas>
+	<div id="output"></div>
+	<a href="https://createjs.com/" target="_blank">
+		<img id="logo" src="../assets/images/createjs-badge-reverse.png">
+	</a>
+	<img id="badge" src="../assets/images/Button_Follow_White.svg">
+	<script src='../assets/libs/createjs.min.js'></script>
+	<script src='../assets/libs/stats.min.js'></script>
+	<script>
+		function Particle(image, x, y, right, bottom) {
+			// this.initialize();
+			this.Container_constructor();
+			this.x = x;
+			this.y = y;
+			this.right = right;
+			this.bottom = bottom;
+			this.velocityX = 0;
+			this.velocityY = 0;
+			this.friction = 0.95;
+			this.addChild(image);
+		}
+		// Particle.prototype = new createjs.Shape();
+		createjs.extend(Particle, createjs.Container);
+
+		Particle.prototype.update = function (right, bottom) {
+			this.right = right;
+			this.bottom = bottom;
+			//console.log(this.right, this.bottom);
+		};
+
+		Particle.prototype.accelerateTo = function (targetX, targetY) {
+			var _x = this.x;
+			var _y = this.y;
+			var _velocityX = this.velocityX;
+			var _velocityY = this.velocityY;
+			var differenceX = targetX - _x;
+			var differenceY = targetY - _y;
+			var square = differenceX * differenceX + differenceY * differenceY;
+			var ratio;
+			if (square > 0) {
+				ratio = 50 / square;
+			} else {
+				ratio = 0;
+			}
+			var accelerationX = differenceX * ratio;
+			var accelerationY = differenceY * ratio;
+			_velocityX += accelerationX;
+			_velocityY += accelerationY;
+			_velocityX *= this.friction;
+			_velocityY *= this.friction;
+			_x += _velocityX;
+			_y += _velocityY;
+			//console.log("this.right", this.right);
+			if (_x < 0) {
+				_x += this.right;
+			} else if (_x > this.right) {
+				_x -= this.right;
+			}
+			if (_y < 0) {
+				_y += this.bottom;
+			} else if (_y > this.bottom) {
+				_y -= this.bottom;
+			}
+			this.x = _x;
+			this.y = _y;
+			this.velocityX = _velocityX;
+			this.velocityY = _velocityY;
+		};
+		function LinkedList() { }
+		LinkedList.prototype.push = function (element) {
+			var _last = this.last;
+			if (_last) {
+				_last.next = element;
+				element.prev = _last;
+				this.last = element;
+			} else {
+				this.first = this.last = element;
+			}
+		};
+		createjs.promote(Particle, "Container");
+
+		var stage;
+		var stageWidth;
+		var stageHeight;
+		var mousePoint = new createjs.Point();
+		var particles = new LinkedList();
+		var numParticles = 10000;
+		var canvasElement;
+		var ps = [];
+
+		init();
+		function init() {
+			outDOM = document.getElementById("output");
+			canvasElement = document.getElementById("myCanvas");
+			canvasElement.width = window.innerWidth;
+			canvasElement.height = window.innerHeight;
+			stageWidth = canvasElement.width;
+			stageHeight = canvasElement.height;
+
+
+			stats = new Stats();
+			outDOM.appendChild(stats.domElement);
+			stats.domElement.style.position = "absolute";
+			stats.domElement.style.top = "0px";
+
+			stage = new createjs.StageGL(canvasElement, { preserveBuffer: true, antialias: true });
+
+			stage.autoClear = false;
+			stage.setClearColor("#19101C");
+			fader = new createjs.Shape();
+
+			stage.addChild(fader);
+			fader.graphics.f("#19101C").dr(0, 0, canvasElement.width, canvasElement.height);
+			fader.cache(0, 0, canvasElement.width, canvasElement.height);
+			fader.alpha = 0.15;
+
+			stage.updateViewport(window.innerWidth, window.innerHeight);
+
+			mousePoint.x = stageWidth / 2;
+			mousePoint.y = stageHeight / 2;
+			createParticles(numParticles);
+			//handleResize();
+
+			stage.update();
+
+			stage.addEventListener("stagemousemove", recordMousePoint);
+			createjs.Ticker.timingMode = createjs.Ticker.RAF;
+			createjs.Ticker.on("tick", updateAnimation);
+			window.addEventListener("resize", handleResize);
+		}
+
+		function handleResize(event) {
+			var w = stageWidth = window.innerWidth;
+			var h = canvasElement.height = stageHeight = window.innerHeight;
+
+			canvasElement.width = w;
+			canvasElement.height = h;
+
+			fader.graphics.clear().f("#19101C").dr(0, 0, w, h).endFill();
+			fader.cache(0, 0, w, h);
+			fader.alpha = .15;
+			var particle = particles.first;
+			while (particle) {
+				particle.update(stageWidth, stageHeight);
+				particle = particle.next;
+			}
+			stage.updateViewport(w, h);
+			stage.clear();
+			stage.update();
+		}
+
+		function recordMousePoint(eventObject) {
+			mousePoint.x = eventObject.stageX;
+			mousePoint.y = eventObject.stageY;
+		}
+		function updateAnimation(eventObject) {
+			var mouseX = mousePoint.x;
+			var mouseY = mousePoint.y;
+			var particle = particles.first;
+			stats.begin();
+			while (particle) {
+				particle.accelerateTo(mouseX, mouseY);
+				particle = particle.next;
+			}
+			stats.end();
+			stage.update(eventObject);
+		}
+
+		function drawParticle() {
+			var s = new createjs.Shape();
+			var radius = 0.5;
+			var size = radius * 2;
+			s.graphics.beginFill("#FFFFFF").drawRect(-radius, -radius, size, size);
+			s.cache(-radius, -radius, size, size);
+			return s.cacheCanvas;
+		}
+
+		function createParticles(amount) {
+			var bit = drawParticle();
+			for (var i = 0; i < amount; i++) {
+				var _x = Math.random() * stageWidth;
+				var _y = Math.random() * stageHeight;
+
+				var particleImage = new createjs.Bitmap(bit);
+				var particle = new Particle(particleImage, _x, _y, stageWidth, stageHeight);
+				particles.push(particle);
+				ps.push(particle);
+				stage.addChild(particle);
+			}
+		}
+	</script>
+
+
+
+</body>
+
+</html>

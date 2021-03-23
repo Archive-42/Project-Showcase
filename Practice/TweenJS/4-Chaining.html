@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" style="background-color: transparent">
+
+<head>
+	<meta charset="UTF-8">
+	<title>TweenJS: Chaining</title>
+	<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body>
+	<canvas id="testCanvas" width="500" height="500"></canvas>
+	<script src='../assets/libs/createjs.min.js'></script>
+	<script>
+		var c = createjs;
+
+		init();
+		function init() {
+			var stage = new c.Stage("testCanvas");
+			var txt = stage.addChild(new c.Text("grow", "24px Arial", "#FFF"));
+			txt.textAlign = "center";
+			txt.textBaseline = "middle";
+			txt.x = txt.y = 250;
+
+			c.Tween.get(txt, { loop: -1 })
+				.to({ scale: 3, text: "spin" }, 2000, c.Ease.bounceOut)
+				.to({ rotation: 720, text: "shrink" }, 2000, c.Ease.quadInOut)
+				.to({ scale: 1, text: "wait" }, 2000, c.Ease.bounceOut)
+				.wait(3000);
+
+			createjs.Ticker.timingMode = createjs.Ticker.RAF;
+			c.Ticker.on("tick", stage);
+		}
+
+	</script>
+
+	<a href="https://createjs.com/" target="_blank">
+		<img id="logo" src="../assets/images/createjs-badge-reverse.png">
+	</a>
+</body>
+
+</html>

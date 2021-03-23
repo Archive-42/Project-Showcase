@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>StageGL Blendmodes Demo</title>
+	<link rel="stylesheet" href="https://use.typekit.net/imb6llj.css">
+	<style>
+		body,
+		html {
+			overflow: hidden;
+			background-color: #fff;
+			width: 100%;
+			height: 100%;
+			padding: 0;
+			margin: 0;
+			min-height: 250px;
+			min-width: 250px;
+		}
+
+		select {
+			font-family: ProximaNova, Arial, Helvetica, sans-serif;
+			background-color: #FFFFFF;
+			color: #3281FF;
+			font-size: 1em;
+			border: 1px solid #666;
+		}
+
+		select:not([multiple]) {
+			-webkit-appearance: none;
+			-moz-appearance: none;
+			background-position: right 50%;
+			background-repeat: no-repeat;
+			background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAMCAYAAABSgIzaAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBNYWNpbnRvc2giIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NDZFNDEwNjlGNzFEMTFFMkJEQ0VDRTM1N0RCMzMyMkIiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6NDZFNDEwNkFGNzFEMTFFMkJEQ0VDRTM1N0RCMzMyMkIiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo0NkU0MTA2N0Y3MUQxMUUyQkRDRUNFMzU3REIzMzIyQiIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo0NkU0MTA2OEY3MUQxMUUyQkRDRUNFMzU3REIzMzIyQiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PuGsgwQAAAA5SURBVHjaYvz//z8DOYCJgUxAf42MQIzTk0D/M+KzkRGPoQSdykiKJrBGpOhgJFYTWNEIiEeAAAMAzNENEOH+do8AAAAASUVORK5CYII=);
+			padding: .25em;
+			padding-right: 1.5em
+		}
+
+		canvas {
+			background-color: #fff;
+			position: absolute;
+			bottom: 0;
+		}
+
+		#content {
+			width: 100%;
+			height: 100%;
+			position: relative;
+		}
+
+		#content p {
+			font-family: ProximaNova, Arial, Helvetica, sans-serif;
+			position: absolute;
+			color: #6d7989;
+			font-size: 1.4em;
+			top: 15px;
+			left: 50%;
+			transform: translateX(-50%);
+			margin: 0;
+		}
+
+		#logo {
+			position: absolute;
+			right: 0px;
+			bottom: 0px;
+		}
+	</style>
+</head>
+
+<body>
+
+	<div id="content">
+		<p>Stage GL Blend Modes:
+			<select id="modes"></select>
+		</p>
+	</div>
+	<a href="https://createjs.com/" target="_blank">
+		<img id="logo" src="../assets/images/createjs-badge-black.png" />
+	</a>
+	<script src='../assets/libs/createjs.min.js'></script>
+	<script src='../assets/js/StageGL.js'></script>
+
+	<script>
+		var imageUrls = [
+			"../assets/images/sea-sky-sunset-water_512.jpg",
+			"../assets/images/big_hue_solid.png"
+		];
+		var imgData = [], loadCount = 0;
+
+		var contentDOM, optionDOM, canGo;
+		var canvas, stage;
+		var layer1, layer2, container;
+
+		var width = 360, height = 360, tickCount = 0, scale = 1;
+
+		init();
+		function init() {
+			canGo = false;
+			window.addEventListener("resize", resize);
+			contentDOM = document.getElementById("content");
+			optionDOM = document.getElementById("modes");
+
+			var arr = [
+				"source-over",
+				"source-in",
+				"source-out",
+				"source-atop",
+				"destination-over",
+				"destination-in",
+				"destination-out",
+				"destination-atop",
+				"copy",
+				"multiply",
+				"screen",
+				"lighter",
+				"lighten",
+				"darken",
+				"overlay",
+				"hard-light",
+				"soft-light",
+				"color-dodge",
+				"color-burn",
+				"xor",
+				"difference",
+				"exclusion",
+				"hue",
+				"saturation",
+				"color",
+				"luminosity"
+			];
+			var string = "";
+			for (var i = 0, l = arr.length; i < l; i++) {
+				string += '<option value="' + arr[i] + '"';
+				if (arr[i] == "screen") {
+					string += ' selected="selected"';
+				}
+				string += '>' + arr[i] + '</option>';
+			}
+
+			optionDOM.innerHTML = string;
+			optionDOM.addEventListener("change", updateContent);
+
+			loadCount = imageUrls.length;
+			imageUrls.forEach(function (currentValue, index) {
+				var img = imgData[index] = new Image();
+				img.crossOrigin = "anonymous";
+				img.onload = goTest;
+				img.src = currentValue;
+			});
+
+			createjs.Ticker.on("tick", draw);
+			createjs.Ticker.useRAF = true;
+		}
+
+		function goTest() {
+			if (--loadCount == 0) {
+				canGo = true;
+				go();
+			}
+		}
+
+		function updateContent() {
+			if (!canGo) { return; }
+
+			layer2.compositeOperation = optionDOM.value;
+		}
+
+		function go() {
+			if (!canGo) { return; }
+
+			if (canvas) {
+				stage.releaseTexture && stage.releaseTexture(stage);
+				contentDOM.removeChild(canvas);
+			}
+
+			var image;
+			container = new createjs.Container();
+
+			image = imgData[0];
+			layer1 = new createjs.Bitmap(image);
+			container.addChild(layer1);
+			layer1.regX = image.naturalWidth / 2;
+			layer1.regY = image.naturalHeight / 2;
+
+			image = imgData[1];
+			layer2 = new createjs.Bitmap(image);
+			container.addChild(layer2);
+			layer2.regX = image.naturalWidth / 2;
+			layer2.regY = image.naturalHeight / 2;
+
+			canvas = document.createElement("canvas");
+			canvas.width = width;
+			canvas.height = height;
+			contentDOM.appendChild(canvas);
+
+			stage = new createjs.StageGL(canvas, {
+				autoPurge: -1,
+				antialias: true,
+				transparent: false
+			});
+			stage.setClearColor && stage.setClearColor("#fff");
+
+			layer2.compositeOperation = optionDOM.value;
+			stage.addChild(container);
+
+			setTimeout(resize, 10);
+		}
+
+		function resize() {
+			if (!canGo) { return; }
+
+			width = document.body.clientWidth;
+			height = document.body.clientHeight - 60;
+
+			var clampW = (document.body.offsetWidth / 2) < document.body.offsetHeight * 0.70;
+
+			if (clampW) {
+				scale = width / (layer1.image.naturalWidth * 2);
+			} else {
+				scale = height / layer1.image.naturalHeight * 0.70;
+			}
+			layer2.scaleX = layer2.scaleY = layer1.scaleX = layer1.scaleY = scale;
+
+			layer1.x = layer2.baseX = width >> 1;
+			layer1.y = layer2.y = height >> 1;
+
+			canvas.width = width;
+			canvas.height = height;
+
+			stage.updateViewport && stage.updateViewport(width, height);
+			stage.update();
+		}
+
+		function draw() {
+			if (!canGo) { return; }
+
+			layer2.rotation += 0.75;
+			layer2.x = layer2.baseX + (Math.sin(tickCount * 0.02) * (layer2.image.naturalWidth / 2) * scale);
+
+			stage.update();
+
+			tickCount++;
+		}
+	</script>
+
+
+
+
+</body>
+
+</html>

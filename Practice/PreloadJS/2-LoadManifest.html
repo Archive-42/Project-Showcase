@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" style="overflow:scroll; display: table; margin: 30px;">
+
+<head>
+	<meta charset="UTF-8">
+	<title>PreloadJS: Manifests</title>
+	<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body>
+	<div id="progressbar"></div>
+	<script src='../assets/libs/createjs.min.js'></script>
+	<script>
+		var c = createjs;
+
+		init();
+		function init() {
+			var manifest = [
+				{ src: "image0.jpg", id: "image0" },
+				{ src: "image1.jpg", id: "image1" },
+				{ src: "image2.jpg", id: "image2" },
+				{ src: "image3.jpg", id: "image3" }
+			];
+
+			preload = new createjs.LoadQueue(true); // use XHR vs tag loading
+			preload.on("progress", onProgress);
+			preload.on("fileload", onFileLoad);
+
+			// start immediately, and use a base path:
+			preload.loadManifest(manifest, true, "../assets/images/");
+		}
+
+		function onProgress(evt) {
+			var style = document.getElementById("progressbar").style;
+			style.width = (evt.progress * 500) + "px";
+			style.visibility = evt.progress < 1 ? "visible" : "hidden";
+		}
+
+		function onFileLoad(evt) {
+			var image = evt.result;
+			image.className = "borderImage";
+
+			var deg = -8 + Math.random() * 16 | 0;
+			image.style.transform = "rotate(" + deg + "deg)";
+			document.body.append(image);
+		}
+	</script>
+
+
+	<a href="https://createjs.com/" target="_blank">
+		<img id="logo1" src="../assets/images/createjs-badge-reverse.png">
+	</a>
+
+</body>
+
+</html>

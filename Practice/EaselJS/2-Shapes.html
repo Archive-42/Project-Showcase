@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>EaselJS: Shapes</title>
+	<link rel="stylesheet" href="https://use.typekit.net/imb6llj.css">
+	<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body>
+	<canvas id="testCanvas" width="550" height="500"></canvas>
+	<script src='../assets/libs/createjs.min.js'></script>
+	<script>
+		var c = createjs;
+		var stage = new c.Stage("testCanvas");
+		var shape = new c.Shape();
+		shape.graphics.beginFill("white").drawRect(-50,-50,100,100);
+		shape.x = shape.y = 150;
+		stage.addChild(shape);
+
+		var shape2 = new c.Shape(shape.graphics);
+		shape2.x = 300;
+		shape2.y = 150;
+		shape2.rotation = 45;
+
+		var shape3 = shape.clone();
+		shape3.scale = 1.5;
+		shape3.x = 450;
+		
+		stage.addChild(shape2, shape3);
+		stage.update();
+	</script>
+
+	<a href="https://createjs.com/" target="_blank">
+		<img id="logo" src="../assets/images/createjs-badge-reverse.png">
+	</a>
+</body>
+
+</html>

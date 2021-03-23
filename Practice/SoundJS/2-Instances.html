@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Workshop: Instances</title>
+	<link rel="stylesheet" href="https://use.typekit.net/imb6llj.css">
+	<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body>
+
+	<div id=wrapper>
+		<input id="playBtn" class="cjsbutton" type="button" disabled onclick="playNext()" value="Loading...">
+	</div>
+	<script src='../assets/libs/createjs.min.js'></script>
+	<script>
+		var c = createjs;
+		var tracks = [], trackIndex = -1;
+
+		init();
+		function init() {
+			playBtn = document.getElementById("playBtn");
+			playBtn.value = "Loading...";
+
+			var manifest = [
+				{ src: "../assets/sounds/mac_plus.mp3", id: "mac_plus" },
+				{ src: "../assets/sounds/MK21.mp3", id: "mk21" },
+				{ src: "../assets/sounds/push.mp3", id: "push" }
+			];
+
+			var queue = new createjs.LoadQueue(true);
+			queue.installPlugin(createjs.Sound); // auto register sounds as they load
+			queue.addEventListener("fileload", onFileLoad);
+			queue.loadManifest(manifest, true);
+		}
+
+		function onFileLoad(evt) {
+			var snd = c.Sound.play(evt.item.id, { loop: -1, paused: true, volume: 0 })
+			tracks.push(snd);
+			if (playBtn.disabled) {
+				playBtn.disabled = false;
+				playNext();
+			}
+		}
+
+		function playNext() {
+			var track = tracks[trackIndex];
+			if (track) {
+				c.Tween.get(track, { override: true }).to({ volume: 0 }, 5000).call(track.stop);
+			}
+			trackIndex = (trackIndex + 1) % tracks.length;
+			track = tracks[trackIndex];
+			c.Tween.get(track, { override: true }).call(track.play).to({ volume: 1 }, 5000);
+
+			playBtn.value = "Playing Track " + (trackIndex+1);
+		}
+	</script>
+
+	<a href="https://createjs.com/" target="_blank">
+		<img id="logo" src="../assets/images/createjs-badge-reverse.png">
+	</a>
+</body>
+
+</html>

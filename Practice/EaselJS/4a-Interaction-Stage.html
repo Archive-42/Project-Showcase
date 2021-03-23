@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>EaselJS: Interaction: Stage</title>
+	<link rel="stylesheet" href="https://use.typekit.net/imb6llj.css">
+	<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body>
+	<canvas id="testCanvas" width="550" height="500"></canvas>
+	<script src='../assets/libs/createjs.min.js'></script>
+	<script>
+		var c = createjs, stage;
+
+		init();
+		function init() {
+			stage = new c.Stage("testCanvas");
+			stage.on("stagemousedown", onMouseDown);
+
+			c.Ticker.on("tick", stage);
+			window.addEventListener("resize", resize);
+			resize();
+		}
+
+		function onMouseDown() {
+			stage.addEventListener("stagemousemove", onMouseMove);
+			stage.on("stagemouseup", onMouseUp);
+		}
+
+		function onMouseUp(evt) {
+			// showing two ways to remove listeners:
+			evt.remove(); // this removes the current listener (ie. for mouseup)
+			stage.removeEventListener("stagemousemove", onMouseMove)
+		}
+
+		function onMouseMove() {
+			var s = new createjs.Shape();
+			s.graphics.ss(5).f("#f6db68").dp(0, 0, 30, 5, 0.6, -90);
+			s.x = stage.mouseX;
+			s.y = stage.mouseY;
+			s.rotation = Math.random() * 360;
+			c.Tween.get(s).to({ rotation: Math.random() * 360, scale: 0.2, regX: 200, alpha: 0 }, 1000, c.Ease.quadIn).call(removeStar);
+			stage.addChild(s);
+		}
+
+		function removeStar(evt) {
+			stage.removeChild(evt.target);
+		}
+
+		function resize() {
+			stage.canvas.width = window.innerWidth;
+			stage.canvas.height = window.innerHeight;
+		}
+	</script>
+
+	<img id="badge" src="../assets/images/Button_Drag_White.svg">
+	<a href="https://createjs.com/" target="_blank">
+		<img id="logo" src="https://createjs.com/mediakit/createjs-badge-reverse.png">
+	</a>
+</body>
+
+</html>

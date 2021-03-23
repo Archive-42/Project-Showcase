@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Workshop:EaselJS #6 SpriteSheets</title>
+	<link rel="stylesheet" href="https://use.typekit.net/imb6llj.css">
+	<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body>
+	<canvas id="testCanvas" width="550" height="500"></canvas>
+	<script src='../assets/libs/createjs.min.js'></script>
+	<script>
+		var c = createjs, stage, grant, title;
+		var speed = 300, running = false;
+
+		init();
+		function init() {
+			stage = new c.Stage("testCanvas");
+			stage.addEventListener("stagemousedown", jump);
+
+			title = new c.Text("SpriteSheets!!!", "180px effra", "#F9F9F9");
+			title.textAlign = "center";
+			title.textBaseline = "middle";
+
+			var queue = new c.LoadQueue();
+			queue.on("complete", onComplete);
+			queue.loadFile({ src: "../assets/data/grant.json", id: "spriteSheet", type: c.Types.SPRITESHEET }, true);
+		}
+
+		function onComplete(event) {
+			spriteSheet = event.target.getResult("spriteSheet");
+			grant = new c.Sprite(spriteSheet, "jump");
+			grant.x = -grant.getBounds().width;
+			stage.addChild(title, grant);
+
+			c.Ticker.timingMode = createjs.Ticker.RAF;
+			c.Ticker.on("tick", tick);
+
+			window.addEventListener("resize", resize);
+			resize();
+		}
+
+		function resize() {
+			var w = stage.canvas.width = window.innerWidth;
+			var h = stage.canvas.height = window.innerHeight;
+
+			title.x = w >> 1;
+			title.y = h >> 1;
+			grant.y = title.y + title.getBounds().height / 2;
+		}
+
+		function jump() {
+			running = !running;
+			grant.framerate = running ? 100 : 30;
+			speed = running ? 1000 : 300;
+			if (running) {
+				blur();
+				grant.gotoAndPlay("jump");
+			} else { unblur(); }
+		}
+
+		function blur() {
+			title.filters = [new c.BlurFilter(30, 0, 2)];
+			bounds = title.getBounds();
+			title.cache(bounds.x, bounds.y, bounds.width, bounds.height);
+		}
+
+		function unblur() {
+			title.filters = [];
+			title.uncache();
+		}
+
+		function tick(evt) {
+			var grantW = grant.getBounds().width;
+			grant.x += evt.delta / 1000 * speed;
+			if (grant.x > stage.canvas.width + grantW) { grant.x = -grantW; }
+			stage.y = running ? Math.random() * 5 : 0;
+			stage.update(evt);
+		}
+	</script>
+
+	<a href="https://createjs.com/" target="_blank">
+		<img id="logo" src="../assets/images/createjs-badge-reverse.png">
+	</a>
+	<img id="badge" src="../assets/images/Button_Click_White.svg">
+</body>
+
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>EaselJS: DOMElement</title>
+	<link rel="stylesheet" href="https://use.typekit.net/imb6llj.css">
+	<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body>
+	<canvas id="canvas" width="1024" height="720"></canvas>
+	<div id="form_container">
+		<form class="appnitro" onsubmit="return false;">
+			<div class="form_description">
+				<h2>HTML Form</h2>
+				<p>Just a normal HTML form styled with CSS. My background is in EaselJS though.</p>
+			</div>
+			<ul>
+
+				<li id="li_1" class="">
+					<label class="description">Name </label>
+					<span>
+						<input id="element_1_1" name="element_1_1" class="element text" maxlength="255" size="8" value="">
+						<label>First</label>
+					</span>
+					<span>
+						<input id="element_1_2" name="element_1_2" class="element text" maxlength="255" size="14" value="">
+						<label>Last</label>
+					</span>
+				</li>
+				<li id="li_2" class="">
+					<label class="description">Details
+					</label>
+				</li>
+				<li id="li_7">
+					<label class="description">Checkboxes </label>
+					<span>
+						<input id="element_7_1" name="element_7_1" class="element checkbox" type="checkbox" value="1">
+						<label class="choice" for="element_7_1">First option</label>
+						<input id="element_7_2" name="element_7_2" class="element checkbox" type="checkbox" value="1">
+						<label class="choice" for="element_7_2">Second option</label>
+						<input id="element_7_3" name="element_7_3" class="element checkbox" type="checkbox" value="1">
+						<label class="choice" for="element_7_3">Third option</label>
+
+					</span>
+				</li>
+				<li class="section_break">
+					<h3>Section Break</h3>
+					<p></p>
+				</li>
+				<li id="li_4">
+					<label class="description" for="element_4">Upload a File </label>
+					<div>
+						<input id="element_4" name="element_4" class="element file" type="file">
+					</div>
+				</li>
+				<li id="li_5">
+					<label class="description" for="element_5">Text </label>
+					<div>
+						<input id="element_5" name="element_5" class="element text medium" type="text" maxlength="255" value="">
+					</div>
+				</li>
+				<li id="li_8">
+					<label class="description" for="element_8">Drop Down </label>
+					<div>
+						<select class="element select medium" id="element_8" name="element_8">
+							<option value="" selected="selected"></option>
+							<option value="1">First option</option>
+							<option value="2">Second option</option>
+							<option value="3">Third option</option>
+
+						</select>
+					</div>
+				</li>
+				<li id="li_6">
+					<label class="description">Phone </label>
+					<span>
+						<input id="element_6_1" name="element_6_1" class="element text" size="3" maxlength="3" value="" type="text"> -
+						<label for="element_6_1">(###)</label>
+					</span>
+					<span>
+						<input id="element_6_2" name="element_6_2" class="element text" size="3" maxlength="3" value="" type="text"> -
+						<label for="element_6_2">###</label>
+					</span>
+					<span>
+						<input id="element_6_3" name="element_6_3" class="element text" size="4" maxlength="4" value="" type="text">
+						<label for="element_6_3">####</label>
+					</span>
+
+				</li>
+				<button class="button_text" onclick="onSubmitClick(event)">Submit</button>
+				</li>
+			</ul>
+		</form>
+	</div>
+
+	<script src='../assets/libs/createjs.min.js'></script>
+	<script>
+		var c = createjs, stage, container;
+
+		init();
+		function init() {
+			stage = new c.Stage("canvas");
+
+			c.Ticker.timingMode = createjs.Ticker.RAF;
+			c.Ticker.on("tick", onTick);
+
+			var formDiv = document.getElementById("form_container");
+			var form = new c.DOMElement(formDiv);
+			var formW = formDiv.clientWidth, formH = formDiv.clientHeight;
+
+			var bg = new c.Shape();
+			bg.graphics.f("#EEE").r(0, 0, formW, formH);
+
+			container = stage.addChild(new c.Container());
+			container.regX = formW >> 1;
+			container.regY = formH >> 1;
+			container.scale = 0;
+			container.shadow = new c.Shadow("#356177", 5, 5, 20);
+			container.addChild(bg, form);
+
+			c.Tween.get(container).to({ scale: 1 }, 1000, c.Ease.backOut);
+
+			window.addEventListener("resize", resize);
+			resize();
+		}
+
+		function resize(event) {
+			var w = stage.canvas.width = window.innerWidth;
+			var h = stage.canvas.height = window.innerHeight;
+
+			container.x = w >> 1;
+			container.y = h >> 1;
+			stage.update();
+		}
+
+		function onSubmitClick(event) {
+			c.Tween.get(container).to({ scale: Math.random() + 0.2, rotation: Math.random() * 40 - 20 }, 1500, c.Ease.backOut);
+		}
+
+		function onTick(event) {
+			stage.update(event);
+		}
+	</script>
+
+	<a href="https://createjs.com/" target="_blank">
+		<img id="logo" src="../assets/images/createjs-badge-reverse.png">
+	</a>
+</body>
+
+</html>

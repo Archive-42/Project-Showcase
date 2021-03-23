@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>EaselJS: Hello World</title>
+	<link rel="stylesheet" href="https://use.typekit.net/imb6llj.css">
+	<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body>
+	<canvas id="testCanvas" width="750" height="400"></canvas>
+	<script src='../assets/libs/createjs.min.js'></script>
+	<script>
+		var stage = new createjs.Stage("testCanvas");
+		var title = new createjs.Text("Hello EaselJS!", "120px Arial, sans-serif", "#F9F9F9");
+		stage.addChild(title);
+		stage.update();
+	</script>
+	
+	<a href="https://createjs.com/" target="_blank">
+		<img id="logo" src="../assets/images/createjs-badge-reverse.png">
+	</a>
+</body>
+
+</html>

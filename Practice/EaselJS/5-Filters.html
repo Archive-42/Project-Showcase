@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>EaselJS: Filters</title>
+	<link rel="stylesheet" href="https://use.typekit.net/imb6llj.css">
+	<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body>
+
+	<div>
+		<canvas id="testCanvas" width="550" height="500"></canvas>
+	</div>
+	<script src='../assets/libs/createjs.min.js'></script>
+	<script>
+		var c = createjs, stage;
+		var picCount;
+
+		init();
+		function init() {
+			stage = new createjs.Stage("testCanvas");
+			stage.enableMouseOver(10);
+
+			var manifest = [
+				{ src: "image0.jpg", id: "image0", data: 0 },
+				{ src: "image1.jpg", id: "image1", data: 1 },
+				{ src: "image2.jpg", id: "image2", data: 2 }
+			];
+
+			picCount = manifest.length;
+
+			var queue = new createjs.LoadQueue(true);
+			queue.on("fileload", onFileLoad);
+			queue.loadManifest(manifest, true, "../assets/images/");
+
+			c.Ticker.on("tick", stage);
+			window.addEventListener("resize", resize);
+		}
+
+		function onFileLoad(evt) {
+			var img = evt.result, w = img.width, h = img.height;
+
+			var bmp = new c.Bitmap(img);
+
+			var frame = new c.Shape();
+			frame.graphics.f("white").r(-5, -5, w + 10, h + 10);
+			frame.shadow = new c.Shadow("rgba(0,0,0,0.5)", 0, 0, 2.5);
+
+			var pic = stage.addChild(new c.Container());
+			pic.on("click", onPicClick);
+			pic.cursor = "pointer";
+			pic.addChild(frame, bmp);
+			pic.regX = w / 2;
+			pic.regY = h / 2;
+			pic.rotation = Math.random() * 40 - 20;
+			pic.index = evt.item.data;
+			pic.bitmap = bmp;
+
+			resize();
+		}
+
+		function onPicClick(event) {
+			var pic = event.currentTarget, bmp = pic.bitmap, filter = null;
+			pic.parent.addChild(pic); // pop to the top
+
+			if (bmp.filters && bmp.filters.length) {
+				bmp.filters = [];
+				bmp.uncache();
+				return;
+			}
+
+			//Apply filters to corresponding image
+			switch (pic.index) {
+				case 0:
+					var colorMatrix = new createjs.ColorMatrix();
+					colorMatrix.adjustSaturation(-100);
+					colorMatrix.adjustContrast(50);
+					filter = new c.ColorMatrixFilter(colorMatrix);
+					break;
+				case 1:
+					filter = new c.BlurFilter(8, 8, 2);
+					break;
+				default:
+					filter = new c.ColorFilter(0.15, 0.75, 1, 1); // red, green, blue, alpha
+					break;
+			}
+
+			var img = bmp.image;
+			bmp.filters = [filter];
+			bmp.cache(0, 0, img.width, img.height);
+		}
+
+		function resize() {
+			var w = stage.canvas.width = window.innerWidth;
+			var h = stage.canvas.height = window.innerHeight;
+
+			for (var i = 0, l = stage.numChildren; i < l; i++) {
+				var pic = stage.getChildAt(i);
+				pic.x = w / (picCount + 1) * (i + 1);
+				pic.y = h / 2;
+			}
+
+			stage.update();
+		}
+	</script>
+
+	<img id="badge" src="../assets/images/Button_Click_White.svg">
+	<a href="https://createjs.com/" target="_blank">
+		<img id="logo" src="../assets/images/createjs-badge-reverse.png">
+	</a>
+</body>
+
+</html>
