@@ -20,7 +20,7 @@
     "mocha": "^3.2.0",
     "mongodb": "^3.5.7",
     "request": "^2.88.2",
-    "zombie": "^5.0.5"
+    "zombie": "^6.1.4"
   },
   "engines": {
     "node": "10.15.3"
