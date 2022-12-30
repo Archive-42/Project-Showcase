@@ -19,7 +19,7 @@
   "homepage": "https://github.com/appacademy/Module-SQL#readme",
   "dependencies": {
     "chai": "^4.2.0",
-    "mocha": "^7.1.1",
+    "mocha": "^10.2.0",
     "pg": "^7.18.2"
   }
 }
