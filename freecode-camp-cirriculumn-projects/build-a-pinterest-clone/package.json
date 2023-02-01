@@ -19,7 +19,7 @@
     "express": "^5.0.0-alpha.2",
     "express-babelify-middleware": "^0.2.1",
     "express-session": "^1.15.6",
-    "mongoose": "^5.10.0",
+    "mongoose": "^5.13.15",
     "passport": "^0.4.0",
     "passport-github": "^1.1.0",
     "passport-twitter": "^1.0.4",
