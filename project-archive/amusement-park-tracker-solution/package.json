@@ -28,7 +28,7 @@
     "dotenv": "^8.2.0",
     "dotenv-cli": "^3.1.0",
     "mocha": "^7.1.1",
-    "nodemon": "^2.0.2",
+    "nodemon": "^2.0.20",
     "sequelize-cli": "^5.5.1",
     "sqlite3": "^4.1.1",
     "supertest": "^4.0.2"
